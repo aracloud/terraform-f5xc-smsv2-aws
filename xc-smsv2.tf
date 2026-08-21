@@ -1,5 +1,3 @@
-
-
 ####################################
 # xc resource definitions
 
@@ -13,14 +11,14 @@ resource "volterra_securemesh_site_v2" "xc-mcn-smsv2-appstack" {
   enable_ha               = false
 
   labels = {
-    "ves.io/provider"     = "ves-io-AZURE"
+    "ves.io/provider"     = "ves-io-AWS"
   }
 
   re_select {
     geo_proximity = true
   }
 
-  azure {
+  aws {
     not_managed {}
   }
 
@@ -41,84 +39,95 @@ resource "volterra_token" "xc-mcn-sitetoken" {
 }
 
 
-resource "azurerm_virtual_machine" "f5xc-nodes" {
-  depends_on                   = [azurerm_network_interface_security_group_association.azure_nisga_ce]
-  name                         = local.smsv2-site-name
-  location                     = azurerm_resource_group.azure_rg.location
-  resource_group_name          = azurerm_resource_group.azure_rg.name
-  primary_network_interface_id = azurerm_network_interface.azure_nic_ce.id
-  network_interface_ids        = [azurerm_network_interface.azure_nic_ce.id]
-  vm_size                      = var.f5xc-sms-instance-type
+resource "aws_instance" "f5xc_nodes" {
+  ami           = var.f5xc_ce_ami_id
+  instance_type = var.f5xc-sms-instance-type
 
-  # Uncomment these lines to delete the disks automatically when deleting the VM
-  delete_os_disk_on_termination    = true
-  delete_data_disks_on_termination = true
-  identity {
-    type = "SystemAssigned"
-  }
+  subnet_id = aws_subnet.aws_sn.id
 
-  plan {
-    name      = "f5xccebyol"
-    publisher = "f5-networks"
-    product   = "f5xc_customer_edge"
-  }
+  vpc_security_group_ids = [
+    aws_security_group.aws_sg.id
+  ]
 
-  storage_image_reference {
-    publisher = var.stor_img_ref_ce.publisher
-    offer     = var.stor_img_ref_ce.offer
-    sku       = var.stor_img_ref_ce.sku
-    version   = var.stor_img_ref_ce.version
-  }
+  key_name = aws_key_pair.f5xc.key_name
 
-  storage_os_disk {
-    name              = "${var.prefix}-ce-node-disk"
-    caching           = "ReadWrite"
-    create_option     = "FromImage"
-    managed_disk_type = var.f5xc-sms-storage-account-type
-  }
+  user_data = templatefile("${path.module}/xc-ce-data.tpl", {
+    cluster_name = local.smsv2-site-name
+    token        = volterra_token.xc-mcn-sitetoken.id
+  })
 
-  os_profile {
-    computer_name  = "${var.prefix}-node-${random_id.xc-mcn-random-id.hex}"
-    admin_username = var.ce-node-user
-    admin_password = random_string.password.result
-    custom_data = base64encode(templatefile("${path.module}/xc-ce-data.tpl", {
-      cluster_name = local.smsv2-site-name,
-      token = volterra_token.xc-mcn-sitetoken.id
-    }))
-  }
-
-  os_profile_linux_config {
-    disable_password_authentication = false
+  root_block_device {
+    volume_size = var.f5xc-sms-storage-size
+    volume_type = "gp3"
   }
 
   tags = {
-    Name   = "{var.prefix}-node-[random_id.xc-mcn-random-id.hex]"
+    Name   = local.smsv2-site-name
     source = "terraform"
     owner  = var.tag_owner
   }
+
+  depends_on = [
+    volterra_securemesh_site_v2.xc-mcn-smsv2-appstack
+  ]
 }
 
-resource "azurerm_network_interface" "azure_nic_ce" {
-  name                = "${var.prefix}-nic-ce"
-  location            = azurerm_resource_group.azure_rg.location
-  resource_group_name = azurerm_resource_group.azure_rg.name
+resource "aws_network_interface" "f5xc_ce" {
+  subnet_id = aws_subnet.aws_sn.id
 
-  ip_configuration {
-    name                          = "${var.prefix}-ipconfig"
-    subnet_id                     = azurerm_subnet.azure_sn.id
-    private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.azure_pip_ce.id
+  security_groups = [
+    aws_security_group.aws_sg.id
+  ]
+
+  tags = {
+    Name = "${var.prefix}-eni-ce"
   }
 }
 
-resource "azurerm_network_interface_security_group_association" "azure_nisga_ce" {
-  network_interface_id    = azurerm_network_interface.azure_nic_ce.id
-  network_security_group_id = azurerm_network_security_group.azure_nsg.id
+resource "aws_instance" "f5xc_nodes" {
+  subnet_id = aws_subnet.aws_sn.id
+
+  vpc_security_group_ids = [
+    aws_security_group.aws_sg.id
+  ]
 }
 
-resource "azurerm_public_ip" "azure_pip_ce" {
-  name                = "${var.prefix}-pip-ce"
-  location            = azurerm_resource_group.azure_rg.location
-  resource_group_name = azurerm_resource_group.azure_rg.name
-  allocation_method   = "Dynamic"
+resource "aws_eip" "f5xc_ce" {
+  domain = "vpc"
+
+  tags = {
+    Name = "${var.prefix}-eip-ce"
+  }
 }
+
+resource "aws_eip_association" "f5xc_ce" {
+  instance_id   = aws_instance.f5xc_nodes.id
+  allocation_id = aws_eip.f5xc_ce.id
+}
+
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.aws_vpc.id
+
+  tags = {
+    Name = "${var.prefix}-igw"
+  }
+}
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.aws_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = {
+    Name = "${var.prefix}-rt-public"
+  }
+}
+
+resource "aws_route_table_association" "public" {
+  subnet_id      = aws_subnet.aws_sn.id
+  route_table_id = aws_route_table.public.id
+}
+

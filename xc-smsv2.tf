@@ -43,6 +43,7 @@ resource "aws_instance" "f5xc_nodes" {
   ami           = var.f5xc_ce_ami_id
   instance_type = var.f5xc-sms-instance-type
 
+  source_dest_check = false
   subnet_id = aws_subnet.aws_sn.id
 
   vpc_security_group_ids = [

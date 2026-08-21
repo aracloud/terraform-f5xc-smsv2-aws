@@ -19,7 +19,7 @@ variable "prefix" {
 ####################################
 # define AWS wide vars
 
-variable "aws_region" {
+variable "aws-location" {
   description = "AWS region to run the deployment"
   type        = string
 }

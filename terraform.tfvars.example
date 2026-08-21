@@ -1,11 +1,11 @@
 prefix = "your-prefix"
 
-aws-location = "us-west-1"
-# aws-location = "us-west-2"
-# aws-location = "eu-central-1"
-# aws-location = "eu-central-2" # Zurich
-# aws-location = "westeurope"
-# aws-location = "switzerlandnorth"
+aws_region = "us-west-1"
+# aws_region = "us-west-2"
+# aws_region = "eu-central-1"
+# aws_region = "eu-central-2" # Zurich
+# aws_region = "westeurope"
+# aws_region = "switzerlandnorth"
 
 tag_source_git = "terraform-f5xc-smsv2-aws"
 tag_owner = "your-email"

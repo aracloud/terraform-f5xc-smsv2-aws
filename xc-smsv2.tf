@@ -131,3 +131,7 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
 }
 
+resource "aws_key_pair" "f5xc" {
+  key_name   = "${var.prefix}-f5xc"
+  public_key = file(var.docker-pub-key)
+}

@@ -8,7 +8,7 @@ tag_source_git = "terraform-f5xc-smsv2-azure"
 tag_owner = "ara@f5.com"
 #tag_source_host = "apupi"
 
-docker-instance-type = "Standard_F2"
+docker-instance-type = "t3.medium"
 docker-storage-account-type = "Standard_LRS"
 docker-node-user = "adminuser"
 docker-pub-key = "/home/ndee/.ssh/id_rsa.pub"

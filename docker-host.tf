@@ -1,59 +1,76 @@
-# azure docker host running workloads
-resource "azurerm_linux_virtual_machine" "azure_dkr" {
-  depends_on          = [azurerm_network_interface_security_group_association.azure_nisga_dkr]
-  name                = "${var.prefix}-dkr-node"
-  resource_group_name = azurerm_resource_group.azure_rg.name
-  location            = azurerm_resource_group.azure_rg.location
-  size                = var.docker-instance-type
-  admin_username      = var.docker-node-user
+####################################
+# AWS Docker host running workloads
 
-  network_interface_ids = [
-    azurerm_network_interface.azure_nic_dkr.id,
+resource "aws_network_interface" "aws_nic_dkr" {
+  subnet_id = aws_subnet.aws_sn.id
+
+  private_ips = [
+    var.xc_origin_ip1
   ]
 
-  admin_ssh_key {
-    username   = var.docker-node-user
-    public_key = file("${var.docker-pub-key}")
-  }
+  security_groups = [
+    aws_security_group.aws_sg.id
+  ]
 
-  os_disk {
-    name                 = "${var.prefix}-dkr-node-disk"
-    caching              = "ReadWrite"
-    storage_account_type = var.docker-storage-account-type
-  }
-
-  source_image_reference {
-    publisher = var.src_img_ref_docker.publisher
-    offer     = var.src_img_ref_docker.offer
-    sku       = var.src_img_ref_docker.sku
-    version   = var.src_img_ref_docker.version
-  }
-
-  custom_data = filebase64("${path.module}/docker-data.tpl")
-}
-
-resource "azurerm_network_interface" "azure_nic_dkr" {
-  name                = "${var.prefix}-nic-dkr"
-  location            = azurerm_resource_group.azure_rg.location
-  resource_group_name = azurerm_resource_group.azure_rg.name
-
-  ip_configuration {
-    name                          = "${var.prefix}-ipconfig"
-    subnet_id                     = azurerm_subnet.azure_sn.id
-    private_ip_address_allocation = "Static"
-    private_ip_address            = var.xc_origin_ip1
-    public_ip_address_id          = azurerm_public_ip.azure_pip_dkr.id
+  tags = {
+    Name   = "${var.prefix}-nic-dkr"
+    source = var.tag_source_git
+    owner  = var.tag_owner
+    host   = local.hostname
+    create = local.today-timestamp
   }
 }
 
-resource "azurerm_network_interface_security_group_association" "azure_nisga_dkr" {
-  network_interface_id    = azurerm_network_interface.azure_nic_dkr.id
-  network_security_group_id = azurerm_network_security_group.azure_nsg.id
+
+resource "aws_instance" "aws_dkr" {
+  name = "${var.prefix}-dkr-node"
+
+  ami           = var.docker_ami_id
+  instance_type = var.docker-instance-type
+
+  network_interface {
+    network_interface_id = aws_network_interface.aws_nic_dkr.id
+    device_index         = 0
+  }
+
+  key_name = aws_key_pair.docker.key_name
+
+  root_block_device {
+    volume_size = var.docker-storage-size
+    volume_type = "gp3"
+  }
+
+  user_data = file("${path.module}/docker-data.tpl")
+
+  tags = {
+    Name   = "${var.prefix}-dkr-node"
+    source = var.tag_source_git
+    owner  = var.tag_owner
+    host   = local.hostname
+    create = local.today-timestamp
+  }
 }
 
-resource "azurerm_public_ip" "azure_pip_dkr" {
-  name                = "${var.prefix}-pip-dkr"
-  location            = azurerm_resource_group.azure_rg.location
-  resource_group_name = azurerm_resource_group.azure_rg.name
-  allocation_method   = "Dynamic"
+
+resource "aws_eip" "aws_pip_dkr" {
+  domain = "vpc"
+
+  tags = {
+    Name   = "${var.prefix}-eip-dkr"
+    source = var.tag_source_git
+    owner  = var.tag_owner
+    host   = local.hostname
+    create = local.today-timestamp
+  }
+}
+
+
+resource "aws_eip_association" "aws_pip_dkr" {
+  network_interface_id = aws_network_interface.aws_nic_dkr.id
+  allocation_id        = aws_eip.aws_pip_dkr.id
+}
+
+resource "aws_key_pair" "docker" {
+  key_name   = "${var.prefix}-docker"
+  public_key = file(var.docker-pub-key)
 }

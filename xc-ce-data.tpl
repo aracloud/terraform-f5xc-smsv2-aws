@@ -20,7 +20,7 @@ write_files:
       Token: ${token}
       MauricePrivateEndpoint: https://register-tls.ves.volterra.io
       MauriceEndpoint: https://register.ves.volterra.io
-      CertifiedHardwareEndpoint: https://vesio.blob.core.windows.net/releases/certified-hardware/azure.yml
+      CertifiedHardwareEndpoint: https://vesio.blob.core.windows.net/releases/certified-hardware/aws.yml
     Kubernetes:
       EtcdUseTLS: True
       Server: vip

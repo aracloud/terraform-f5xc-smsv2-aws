@@ -1,40 +1,36 @@
 prefix = "ara-swiss"
 
-azure-location = "westus"
-# azure-location = "westeurope"
-# azure-location = "switzerlandnorth"
+aws-location = "us-west-1"
+# aws-location = "us-west-2"
+# aws-location = "eu-central-1"
+# aws-location = "eu-central-2" # Zurich
+# aws-location = "westeurope"
+# aws-location = "switzerlandnorth"
 
-tag_source_git = "terraform-f5xc-smsv2-azure"
+tag_source_git = "terraform-f5xc-smsv2-aws"
 tag_owner = "ara@f5.com"
-#tag_source_host = "apupi"
+#tag_source_host = "dkr01"
+
+
+####################################
+# Docker host
 
 docker-instance-type = "t3.medium"
-docker-storage-account-type = "Standard_LRS"
+docker-storage-size  = 30
 docker-node-user = "adminuser"
 docker-pub-key = "/home/ndee/.ssh/id_rsa.pub"
 
-# image details docker node
-src_img_ref_docker = {
-    publisher = "debian"
-    offer     = "debian-12"
-    sku       = "12"
-    version   = "latest"
-}
 
-f5xc-sms-instance-type = "Standard_DS3_v2"
-# f5xc-sms-instance-type = "Standard_DS4_v2"
-# f5xc-sms-instance-type = "Standard_DS5_v2"
-f5xc-sms-storage-account-type = "Standard_LRS"
+####################################
+# F5XC CE
 
-ce-node-user = "volterra-admin"
+f5xc-sms-instance-type = "m5.2xlarge"
+f5xc-sms-storage-size  = 80
+ce-node-user           = "volterra-admin"
 
-# image details ce node
-stor_img_ref_ce = {
-    publisher = "f5-networks"
-    offer     = "f5xc_customer_edge"
-    sku       = "f5xccebyol"
-    version   = "2024.44.1"
-}
+
+####################################
+# XC
 
 xc_tenant = "f5-emea-ent-bceuutam"
 xc_namespace = "a-arquint"

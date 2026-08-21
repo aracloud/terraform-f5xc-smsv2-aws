@@ -2,8 +2,8 @@
 
 ## Overview
 This Terraform project deploys following items:
-- Docker host with Demo application (DVWA) in **Azure** 
-- CE single NIC Host in **Azure** connected to F5 SaaS platform
+- Docker host with Demo application (DVWA) in **AWS** 
+- CE single NIC Host in **AWS** connected to F5 SaaS platform
 - Virtual Server in **F5 Saas** including WAF profile
 
 This repository is for demo or PoC show cases only!
@@ -27,7 +27,7 @@ The modules are available here : https://registry.terraform.io/providers/volterr
 Before using this Terraform project, ensure you have the following:
 
 - **Terraform CLI** installed on your machine
-- An **Azure account** (CLI "az login --use-device-code") to create **resource groups**, **security groups**, **networks** etc.
+- An AWS account
 - API Certificate (P12 file and URL) for **F5 SaaS** access
 - SSH public key for Docker Host VM (adminuser) authentication
 - An third-level-domain in F5 SaaS for service deplyoment (DNS Delegation)
@@ -39,7 +39,7 @@ Doc for API Certificate generation: https://docs.cloud.f5.com/docs/how-to/user-m
 
 ```
 project-directory/
-├── azure.tf
+├── aws.tf
 ├── docker-data.tpl
 ├── docker-host.tf
 ├── ext.tf
@@ -94,9 +94,9 @@ Here are the main key variables to configure:
   prefix = "your-prefix"
   ```
 
-- **Azure wide Variables:**
+- **AWS wide Variables:**
   ```hcl
-  azure-location = "westus"
+  aws-location = "westus"
   tag_owner = "your-email"
   docker-pub-key = "path-to-your-machines-ssh-public-key"
   ```
@@ -128,7 +128,7 @@ This command shows the resources Terraform will create.
 
 ### 6. Deploy the Resources
 
-Apply the configuration to create resources in Azure:
+Apply the configuration to create resources:
 
 ```bash
 terraform apply

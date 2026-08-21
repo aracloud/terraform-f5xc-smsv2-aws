@@ -73,18 +73,6 @@ resource "aws_instance" "f5xc_nodes" {
   ]
 }
 
-resource "aws_network_interface" "f5xc_ce" {
-  subnet_id = aws_subnet.aws_sn.id
-
-  security_groups = [
-    aws_security_group.aws_sg.id
-  ]
-
-  tags = {
-    Name = "${var.prefix}-eni-ce"
-  }
-}
-
 resource "aws_eip" "f5xc_ce" {
   domain = "vpc"
 

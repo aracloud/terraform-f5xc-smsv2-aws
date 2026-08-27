@@ -35,11 +35,6 @@ variable "docker_ami_id" {
   type        = string
 }
 
-variable "f5xc_ami" {
-  description = "AWS AMI ID for F5XC CE"
-  type        = string
-}
-
 
 ####################################
 # Docker host

@@ -11,7 +11,7 @@ resource "volterra_securemesh_site_v2" "xc-mcn-smsv2-appstack" {
   enable_ha               = false
 
   labels = {
-    "ves.io/provider"     = "ves-io-AWS"
+    "ves.io/provider" = "ves-io-AWS"
   }
 
   re_select {
@@ -31,20 +31,20 @@ resource "volterra_securemesh_site_v2" "xc-mcn-smsv2-appstack" {
 
 # xc ce initialization token 
 resource "volterra_token" "xc-mcn-sitetoken" {
-  name      = "${var.prefix}-token-${random_id.xc-mcn-random-id.hex}"
-  namespace = "system"
-  type = "1"
-  site_name = local.smsv2-site-name
+  name       = "${var.prefix}-token-${random_id.xc-mcn-random-id.hex}"
+  namespace  = "system"
+  type       = "1"
+  site_name  = local.smsv2-site-name
   depends_on = [volterra_securemesh_site_v2.xc-mcn-smsv2-appstack]
 }
 
 
 resource "aws_instance" "f5xc_nodes" {
-  ami = data.aws_ssm_parameter.f5xc_ce_ami.value
+  ami           = data.aws_ssm_parameter.f5xc_ce_ami.value
   instance_type = var.f5xc-sms-instance-type
 
   source_dest_check = false
-  subnet_id = aws_subnet.aws_sn.id
+  subnet_id         = aws_subnet.aws_sn.id
 
   vpc_security_group_ids = [
     aws_security_group.aws_sg.id

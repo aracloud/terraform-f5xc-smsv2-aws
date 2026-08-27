@@ -87,6 +87,11 @@ variable "ce-node-user" {
   type        = string
 }
 
+variable "f5xc_ami" {
+  description = "F5XC CE AMI name pattern copied from the F5XC Console"
+  type        = string
+}
+
 
 ####################################
 # F5XC

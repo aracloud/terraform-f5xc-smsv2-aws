@@ -33,10 +33,10 @@ resource "volterra_securemesh_site_v2" "xc" {
 # F5XC CE token
 
 resource "volterra_token" "xc" {
-  name       = "${var.prefix}-token-${random_id.xc-mcn-random-id.hex}"
-  namespace  = "system"
-  type       = "1"
-  site_name  = volterra_securemesh_site_v2.xc.name
+  name      = "${var.prefix}-token-${random_id.xc-mcn-random-id.hex}"
+  namespace = "system"
+  type      = "1"
+  site_name = volterra_securemesh_site_v2.xc.name
 
   depends_on = [
     volterra_securemesh_site_v2.xc

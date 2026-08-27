@@ -23,8 +23,6 @@ resource "aws_network_interface" "aws_nic_dkr" {
 
 
 resource "aws_instance" "aws_dkr" {
-  name = "${var.prefix}-dkr-node"
-
   ami = data.aws_ami.debian.id
   instance_type = var.docker-instance-type
 

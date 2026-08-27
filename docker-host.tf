@@ -2,14 +2,14 @@
 # AWS Docker host running workloads
 
 resource "aws_network_interface" "aws_nic_dkr" {
-  subnet_id = aws_subnet.aws_sn.id
+  subnet_id = aws_subnet.backend.id
 
   private_ips = [
     var.xc_origin_ip1
   ]
 
   security_groups = [
-    aws_security_group.aws_sg.id
+    aws_security_group.docker.id
   ]
 
   tags = {
@@ -23,7 +23,7 @@ resource "aws_network_interface" "aws_nic_dkr" {
 
 
 resource "aws_instance" "aws_dkr" {
-  ami           = data.aws_ami.debian.id
+  ami           = var.docker_ami_id
   instance_type = var.docker-instance-type
 
   network_interface {
@@ -67,6 +67,7 @@ resource "aws_eip_association" "aws_pip_dkr" {
   network_interface_id = aws_network_interface.aws_nic_dkr.id
   allocation_id        = aws_eip.aws_pip_dkr.id
 }
+
 
 resource "aws_key_pair" "docker" {
   key_name   = "${var.prefix}-docker"

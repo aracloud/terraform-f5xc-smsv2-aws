@@ -38,19 +38,51 @@ resource "volterra_token" "xc-mcn-sitetoken" {
   depends_on = [volterra_securemesh_site_v2.xc-mcn-smsv2-appstack]
 }
 
+resource "aws_network_interface" "f5xc_slo" {
+  subnet_id = aws_subnet.slo.id
+
+  security_groups = [
+    aws_security_group.f5xc_slo.id
+  ]
+
+  tags = {
+    Name   = "${var.prefix}-f5xc-slo"
+    source = var.tag_source_git
+    owner  = var.tag_owner
+  }
+}
+
+resource "aws_network_interface" "f5xc_sli" {
+  subnet_id = aws_subnet.sli.id
+
+  security_groups = [
+    aws_security_group.f5xc_sli.id
+  ]
+
+  tags = {
+    Name   = "${var.prefix}-f5xc-sli"
+    source = var.tag_source_git
+    owner  = var.tag_owner
+  }
+}
 
 resource "aws_instance" "f5xc_nodes" {
-  ami           = data.aws_ssm_parameter.f5xc_ce_ami.value
+  ami           = var.f5xc_ce_ami_id
   instance_type = var.f5xc-sms-instance-type
 
   source_dest_check = false
-  subnet_id         = aws_subnet.aws_sn.id
-
-  vpc_security_group_ids = [
-    aws_security_group.aws_sg.id
-  ]
 
   key_name = aws_key_pair.f5xc.key_name
+
+  network_interface {
+    network_interface_id = aws_network_interface.f5xc_slo.id
+    device_index         = 0
+  }
+
+  network_interface {
+    network_interface_id = aws_network_interface.f5xc_sli.id
+    device_index         = 1
+  }
 
   user_data = templatefile("${path.module}/xc-ce-data.tpl", {
     cluster_name = local.smsv2-site-name
@@ -64,7 +96,7 @@ resource "aws_instance" "f5xc_nodes" {
 
   tags = {
     Name   = local.smsv2-site-name
-    source = "terraform"
+    source = var.tag_source_git
     owner  = var.tag_owner
   }
 
@@ -82,13 +114,8 @@ resource "aws_eip" "f5xc_ce" {
 }
 
 resource "aws_eip_association" "f5xc_ce" {
-  instance_id   = aws_instance.f5xc_nodes.id
-  allocation_id = aws_eip.f5xc_ce.id
-}
-
-resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.aws_sn.id
-  route_table_id = aws_route_table.public.id
+  network_interface_id = aws_network_interface.f5xc_slo.id
+  allocation_id        = aws_eip.f5xc_ce.id
 }
 
 resource "aws_key_pair" "f5xc" {

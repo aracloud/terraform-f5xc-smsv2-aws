@@ -1,7 +1,7 @@
 ####################################
 # F5XC Secure Mesh Site v2
 
-resource "volterra_securemesh_site_v2" "xc-mcn-smsv2-appstack" {
+resource "volterra_securemesh_site_v2" "xc" {
   name      = local.smsv2-site-name
   namespace = "system"
 
@@ -30,21 +30,43 @@ resource "volterra_securemesh_site_v2" "xc-mcn-smsv2-appstack" {
 
 
 ####################################
-# F5XC CE initialization token
+# F5XC CE token
 
-resource "volterra_token" "xc-mcn-sitetoken" {
-  name      = "${var.prefix}-token-${random_id.xc-mcn-random-id.hex}"
-  namespace = "system"
-  type      = "1"
-  site_name = local.smsv2-site-name
+resource "volterra_token" "xc" {
+  name       = "${var.prefix}-token-${random_id.xc-mcn-random-id.hex}"
+  namespace  = "system"
+  type       = "1"
+  site_name  = volterra_securemesh_site_v2.xc.name
+
   depends_on = [
-    volterra_securemesh_site_v2.xc-mcn-smsv2-appstack
+    volterra_securemesh_site_v2.xc
   ]
 }
 
 
 ####################################
-# F5XC SLO network interface
+# Find current F5XC CE AMI
+#
+# f5xc_ami is copied from:
+# F5XC Console -> Site -> ... -> Copy image name
+
+data "aws_ami" "f5xc" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = [var.f5xc_ami]
+  }
+
+  owners = [
+    "434481986642",
+    "679593333241"
+  ]
+}
+
+
+####################################
+# F5XC outside / SLO ENI
 
 resource "aws_network_interface" "f5xc_slo" {
   subnet_id = aws_subnet.slo.id
@@ -64,7 +86,7 @@ resource "aws_network_interface" "f5xc_slo" {
 
 
 ####################################
-# F5XC SLI network interface
+# F5XC inside / SLI ENI
 
 resource "aws_network_interface" "f5xc_sli" {
   subnet_id = aws_subnet.sli.id
@@ -84,34 +106,41 @@ resource "aws_network_interface" "f5xc_sli" {
 
 
 ####################################
-# F5XC CE
+# F5XC CE EC2
 
 resource "aws_instance" "f5xc_nodes" {
-  ami           = var.f5xc_ce_ami_id
+  ami           = data.aws_ami.f5xc.id
   instance_type = var.f5xc-sms-instance-type
 
   source_dest_check = false
 
   key_name = aws_key_pair.f5xc.key_name
 
+  user_data = templatefile("${path.module}/xc-ce-data.tpl", {
+    cluster_name = local.smsv2-site-name
+    token        = volterra_token.xc.id
+  })
+
+  root_block_device {
+    volume_size           = var.f5xc-sms-storage-size
+    volume_type           = "gp3"
+    delete_on_termination = true
+  }
+
+  ##################################
+  # SLO / outside
+
   network_interface {
     network_interface_id = aws_network_interface.f5xc_slo.id
     device_index         = 0
   }
 
+  ##################################
+  # SLI / inside
+
   network_interface {
     network_interface_id = aws_network_interface.f5xc_sli.id
     device_index         = 1
-  }
-
-  user_data = templatefile("${path.module}/xc-ce-data.tpl", {
-    cluster_name = local.smsv2-site-name
-    token        = volterra_token.xc-mcn-sitetoken.id
-  })
-
-  root_block_device {
-    volume_size = var.f5xc-sms-storage-size
-    volume_type = "gp3"
   }
 
   tags = {
@@ -123,33 +152,33 @@ resource "aws_instance" "f5xc_nodes" {
   }
 
   depends_on = [
-    volterra_securemesh_site_v2.xc-mcn-smsv2-appstack
+    volterra_securemesh_site_v2.xc
   ]
 }
 
 
 ####################################
-# F5XC CE Elastic IP
+# Public IP for SLO
 
-resource "aws_eip" "f5xc_ce" {
+resource "aws_eip" "f5xc_slo" {
   domain = "vpc"
 
   tags = {
-    Name   = "${var.prefix}-eip-ce"
+    Name   = "${var.prefix}-f5xc-slo-eip"
     source = var.tag_source_git
     owner  = var.tag_owner
   }
 }
 
 
-resource "aws_eip_association" "f5xc_ce" {
+resource "aws_eip_association" "f5xc_slo" {
   network_interface_id = aws_network_interface.f5xc_slo.id
-  allocation_id        = aws_eip.f5xc_ce.id
+  allocation_id        = aws_eip.f5xc_slo.id
 }
 
 
 ####################################
-# F5XC SSH key
+# SSH key
 
 resource "aws_key_pair" "f5xc" {
   key_name   = "${var.prefix}-f5xc"

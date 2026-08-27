@@ -10,6 +10,8 @@ resource "aws_vpc" "main" {
     Name   = "${var.prefix}-vpc"
     source = var.tag_source_git
     owner  = var.tag_owner
+    host   = local.hostname
+    create = local.today-timestamp
   }
 }
 
@@ -29,8 +31,7 @@ resource "aws_internet_gateway" "main" {
 
 
 ####################################
-# SLO subnet
-# F5XC outside interface
+# SLO / Outside subnet
 
 resource "aws_subnet" "slo" {
   vpc_id                  = aws_vpc.main.id
@@ -47,8 +48,7 @@ resource "aws_subnet" "slo" {
 
 
 ####################################
-# SLI subnet
-# F5XC inside interface
+# SLI / Inside subnet
 
 resource "aws_subnet" "sli" {
   vpc_id                  = aws_vpc.main.id
@@ -66,7 +66,6 @@ resource "aws_subnet" "sli" {
 
 ####################################
 # Backend subnet
-# Docker / application workloads
 
 resource "aws_subnet" "backend" {
   vpc_id                  = aws_vpc.main.id
@@ -84,6 +83,7 @@ resource "aws_subnet" "backend" {
 
 ####################################
 # Public route table
+# Internet access via IGW
 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
@@ -102,7 +102,7 @@ resource "aws_route_table" "public" {
 
 
 ####################################
-# SLO route table association
+# SLO -> public route table
 
 resource "aws_route_table_association" "slo" {
   subnet_id      = aws_subnet.slo.id
@@ -111,7 +111,20 @@ resource "aws_route_table_association" "slo" {
 
 
 ####################################
+# Backend -> public route table
+#
+# Docker needs Internet access for apt/Docker etc.
+
+resource "aws_route_table_association" "backend" {
+  subnet_id      = aws_subnet.backend.id
+  route_table_id = aws_route_table.public.id
+}
+
+
+####################################
 # SLI route table
+#
+# No default Internet route here.
 
 resource "aws_route_table" "sli" {
   vpc_id = aws_vpc.main.id
@@ -127,24 +140,4 @@ resource "aws_route_table" "sli" {
 resource "aws_route_table_association" "sli" {
   subnet_id      = aws_subnet.sli.id
   route_table_id = aws_route_table.sli.id
-}
-
-
-####################################
-# Backend route table
-
-resource "aws_route_table" "backend" {
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name   = "${var.prefix}-backend-rt"
-    source = var.tag_source_git
-    owner  = var.tag_owner
-  }
-}
-
-
-resource "aws_route_table_association" "backend" {
-  subnet_id      = aws_subnet.backend.id
-  route_table_id = aws_route_table.backend.id
 }

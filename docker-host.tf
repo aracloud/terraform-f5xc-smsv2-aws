@@ -1,5 +1,5 @@
 ####################################
-# AWS Docker host running workloads
+# Docker backend ENI
 
 resource "aws_network_interface" "aws_nic_dkr" {
   subnet_id = aws_subnet.backend.id
@@ -22,6 +22,9 @@ resource "aws_network_interface" "aws_nic_dkr" {
 }
 
 
+####################################
+# Docker host
+
 resource "aws_instance" "aws_dkr" {
   ami           = var.docker_ami_id
   instance_type = var.docker-instance-type
@@ -34,8 +37,9 @@ resource "aws_instance" "aws_dkr" {
   key_name = aws_key_pair.docker.key_name
 
   root_block_device {
-    volume_size = var.docker-storage-size
-    volume_type = "gp3"
+    volume_size           = var.docker-storage-size
+    volume_type           = "gp3"
+    delete_on_termination = true
   }
 
   user_data = file("${path.module}/docker-data.tpl")
@@ -50,15 +54,16 @@ resource "aws_instance" "aws_dkr" {
 }
 
 
+####################################
+# Public IP
+
 resource "aws_eip" "aws_pip_dkr" {
   domain = "vpc"
 
   tags = {
-    Name   = "${var.prefix}-eip-dkr"
+    Name   = "${var.prefix}-dkr-eip"
     source = var.tag_source_git
     owner  = var.tag_owner
-    host   = local.hostname
-    create = local.today-timestamp
   }
 }
 
@@ -68,6 +73,9 @@ resource "aws_eip_association" "aws_pip_dkr" {
   allocation_id        = aws_eip.aws_pip_dkr.id
 }
 
+
+####################################
+# SSH key
 
 resource "aws_key_pair" "docker" {
   key_name   = "${var.prefix}-docker"

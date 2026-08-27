@@ -1,7 +1,6 @@
 ####################################
-# xc resource definitions
+# F5XC Secure Mesh Site v2
 
-# xc smsv2 site
 resource "volterra_securemesh_site_v2" "xc-mcn-smsv2-appstack" {
   name      = local.smsv2-site-name
   namespace = "system"
@@ -29,14 +28,23 @@ resource "volterra_securemesh_site_v2" "xc-mcn-smsv2-appstack" {
   }
 }
 
-# xc ce initialization token 
+
+####################################
+# F5XC CE initialization token
+
 resource "volterra_token" "xc-mcn-sitetoken" {
-  name       = "${var.prefix}-token-${random_id.xc-mcn-random-id.hex}"
-  namespace  = "system"
-  type       = "1"
-  site_name  = local.smsv2-site-name
-  depends_on = [volterra_securemesh_site_v2.xc-mcn-smsv2-appstack]
+  name      = "${var.prefix}-token-${random_id.xc-mcn-random-id.hex}"
+  namespace = "system"
+  type      = "1"
+  site_name = local.smsv2-site-name
+  depends_on = [
+    volterra_securemesh_site_v2.xc-mcn-smsv2-appstack
+  ]
 }
+
+
+####################################
+# F5XC SLO network interface
 
 resource "aws_network_interface" "f5xc_slo" {
   subnet_id = aws_subnet.slo.id
@@ -49,8 +57,14 @@ resource "aws_network_interface" "f5xc_slo" {
     Name   = "${var.prefix}-f5xc-slo"
     source = var.tag_source_git
     owner  = var.tag_owner
+    host   = local.hostname
+    create = local.today-timestamp
   }
 }
+
+
+####################################
+# F5XC SLI network interface
 
 resource "aws_network_interface" "f5xc_sli" {
   subnet_id = aws_subnet.sli.id
@@ -63,8 +77,14 @@ resource "aws_network_interface" "f5xc_sli" {
     Name   = "${var.prefix}-f5xc-sli"
     source = var.tag_source_git
     owner  = var.tag_owner
+    host   = local.hostname
+    create = local.today-timestamp
   }
 }
+
+
+####################################
+# F5XC CE
 
 resource "aws_instance" "f5xc_nodes" {
   ami           = var.f5xc_ce_ami_id
@@ -98,6 +118,8 @@ resource "aws_instance" "f5xc_nodes" {
     Name   = local.smsv2-site-name
     source = var.tag_source_git
     owner  = var.tag_owner
+    host   = local.hostname
+    create = local.today-timestamp
   }
 
   depends_on = [
@@ -105,18 +127,29 @@ resource "aws_instance" "f5xc_nodes" {
   ]
 }
 
+
+####################################
+# F5XC CE Elastic IP
+
 resource "aws_eip" "f5xc_ce" {
   domain = "vpc"
 
   tags = {
-    Name = "${var.prefix}-eip-ce"
+    Name   = "${var.prefix}-eip-ce"
+    source = var.tag_source_git
+    owner  = var.tag_owner
   }
 }
+
 
 resource "aws_eip_association" "f5xc_ce" {
   network_interface_id = aws_network_interface.f5xc_slo.id
   allocation_id        = aws_eip.f5xc_ce.id
 }
+
+
+####################################
+# F5XC SSH key
 
 resource "aws_key_pair" "f5xc" {
   key_name   = "${var.prefix}-f5xc"

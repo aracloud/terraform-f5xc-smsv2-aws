@@ -40,7 +40,7 @@ resource "volterra_token" "xc-mcn-sitetoken" {
 
 
 resource "aws_instance" "f5xc_nodes" {
-  ami           = var.f5xc_ce_ami_id
+  ami = data.aws_ssm_parameter.f5xc_ce_ami.value
   instance_type = var.f5xc-sms-instance-type
 
   source_dest_check = false

@@ -65,11 +65,6 @@ variable "docker-pub-key" {
   type        = string
 }
 
-variable "docker_ami_id" {
-  description = "AMI ID for Docker node"
-  type        = string
-}
-
 ####################################
 # AWS F5XC CE node
 
@@ -85,11 +80,6 @@ variable "f5xc-sms-storage-size" {
 
 variable "ce-node-user" {
   description = "F5XC CE node user"
-  type        = string
-}
-
-variable "f5xc_ce_ami_id" {
-  description = "AMI ID for F5XC CE"
   type        = string
 }
 

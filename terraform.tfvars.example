@@ -32,6 +32,14 @@ ce-node-user           = "volterra-admin"
 
 
 ####################################
+# AMIs
+
+docker_ami_id  = "AMI-ID-HIER"
+f5xc_ce_ami_id = "AMI-ID-HIER"
+
+
+
+####################################
 # XC
 
 xc_tenant = "your-tenant"

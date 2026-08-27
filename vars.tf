@@ -1,62 +1,63 @@
 ####################################
-# define local variables
-
-locals {
-  smsv2-site-name = "${var.prefix}-ce-aws-${random_id.xc-mcn-random-id.hex}"
-  today-timestamp = timestamp()
-}
-
-
-####################################
-# define planet wide vars :-)
+# General
 
 variable "prefix" {
-  description = "prefix for created objects"
+  description = "Prefix for created objects"
   type        = string
 }
 
-
-####################################
-# define AWS wide vars
-
 variable "aws_region" {
-  description = "AWS region to run the deployment"
+  description = "AWS region"
   type        = string
 }
 
 variable "aws_availability_zone" {
-  description = "AWS availability zone to run the deployment"
+  description = "AWS availability zone"
   type        = string
 }
 
-
-####################################
-# AWS tags
-
 variable "tag_source_git" {
-  type = string
+  description = "Source repository"
+  type        = string
 }
 
 variable "tag_owner" {
-  type = string
+  description = "Owner"
+  type        = string
 }
 
 
 ####################################
-# AWS Docker node
+# AMIs
 
-variable "docker-instance-type" {
-  description = "AWS EC2 instance type for Docker node"
+variable "docker_ami_id" {
+  description = "AWS AMI ID for Docker host"
   type        = string
 }
 
+variable "f5xc_ce_ami_id" {
+  description = "AWS AMI ID for F5XC CE"
+  type        = string
+}
+
+
+####################################
+# Docker host
+
+variable "docker-instance-type" {
+  description = "AWS instance type for Docker host"
+  type        = string
+  default     = "t3.medium"
+}
+
 variable "docker-storage-size" {
-  description = "Docker node root disk size in GB"
+  description = "Docker host root disk size in GB"
   type        = number
+  default     = 30
 }
 
 variable "docker-node-user" {
-  description = "Docker node user"
+  description = "Docker host admin user"
   type        = string
 }
 
@@ -65,54 +66,57 @@ variable "docker-pub-key" {
   type        = string
 }
 
+
 ####################################
-# AWS F5XC CE node
+# F5XC CE
 
 variable "f5xc-sms-instance-type" {
-  description = "AWS EC2 instance type for F5XC CE"
+  description = "AWS instance type for F5XC CE"
   type        = string
+  default     = "m5.2xlarge"
 }
 
 variable "f5xc-sms-storage-size" {
   description = "F5XC CE root disk size in GB"
   type        = number
+  default     = 80
 }
 
 variable "ce-node-user" {
-  description = "F5XC CE node user"
+  description = "F5XC CE admin user"
   type        = string
 }
 
 
 ####################################
-# XC LB related vars
+# F5XC
 
-# tenant
 variable "xc_tenant" {
-  type = string
+  description = "F5 Distributed Cloud tenant"
+  type        = string
 }
 
-# namespace
 variable "xc_namespace" {
-  type = string
+  description = "F5 Distributed Cloud namespace"
+  type        = string
 }
 
-# pool member backend IP address
 variable "xc_origin_ip1" {
-  type = string
+  description = "Backend private IP"
+  type        = string
 }
 
-# origin pool service port
 variable "xc_pub_app_port" {
-  type = string
+  description = "Backend application port"
+  type        = string
 }
 
-# origin pool no TLS
 variable "xc_pub_app_no_tls" {
-  type = string
+  description = "Backend uses HTTP"
+  type        = string
 }
 
-# application domain
 variable "xc_app_domain" {
-  type = string
+  description = "Application domain"
+  type        = string
 }

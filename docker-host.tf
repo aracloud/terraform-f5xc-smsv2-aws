@@ -24,7 +24,7 @@ resource "aws_network_interface" "aws_nic_dkr" {
 # Docker host
 
 resource "aws_instance" "aws_dkr" {
-  ami           = var.docker_ami_id
+  ami           = data.aws_ami.debian.id
   instance_type = var.docker-instance-type
 
   network_interface {

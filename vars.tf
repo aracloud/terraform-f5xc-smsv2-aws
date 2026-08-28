@@ -28,15 +28,6 @@ variable "tag_owner" {
 
 
 ####################################
-# AMIs
-
-variable "docker_ami_id" {
-  description = "AWS AMI ID for Docker host"
-  type        = string
-}
-
-
-####################################
 # Docker host
 
 variable "docker-instance-type" {

@@ -134,7 +134,7 @@ resource "aws_instance" "f5xc_nodes" {
 
   primary_network_interface {
     network_interface_id = aws_network_interface.f5xc_slo.id
-    device_index         = 0
+    #device_index         = 0
   }
 
   ##################################

@@ -27,9 +27,9 @@ resource "aws_instance" "aws_dkr" {
   ami           = data.aws_ami.debian.id
   instance_type = var.docker-instance-type
 
-  network_interface {
+  primary_network_interface {
     network_interface_id = aws_network_interface.aws_nic_dkr.id
-    device_index         = 0
+    #device_index         = 0
   }
 
   key_name = aws_key_pair.docker.key_name

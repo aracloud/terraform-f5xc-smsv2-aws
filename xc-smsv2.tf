@@ -70,6 +70,7 @@ data "aws_ami" "f5xc" {
 
 resource "aws_network_interface" "f5xc_slo" {
   subnet_id = aws_subnet.slo.id
+  source_dest_check = false
 
   security_groups = [
     aws_security_group.f5xc_slo.id
@@ -90,6 +91,7 @@ resource "aws_network_interface" "f5xc_slo" {
 
 resource "aws_network_interface" "f5xc_sli" {
   subnet_id = aws_subnet.sli.id
+  source_dest_check = false
 
   security_groups = [
     aws_security_group.f5xc_sli.id
@@ -112,7 +114,7 @@ resource "aws_instance" "f5xc_nodes" {
   ami           = data.aws_ami.f5xc.id
   instance_type = var.f5xc-sms-instance-type
 
-  source_dest_check = false
+  # source_dest_check = false
 
   key_name = aws_key_pair.f5xc.key_name
 

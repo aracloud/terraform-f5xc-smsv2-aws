@@ -39,13 +39,15 @@ Doc for API Certificate generation: https://docs.cloud.f5.com/docs/how-to/user-m
 
 ```
 project-directory/
+├── aws-data.tf
+├── aws-security-groups.tf
 ├── aws.tf
 ├── docker-data.tpl
 ├── docker-host.tf
-├── ext.tf
 ├── img
 │   └── xc-cloud.drawio.png
 ├── LICENSE
+├── locals.tf
 ├── main.tf
 ├── outputs.tf
 ├── providers.tf

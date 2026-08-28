@@ -8,7 +8,7 @@ resource "volterra_origin_pool" "xc_origin_pool" {
 
   origin_servers {
     private_ip {
-      ip = var.xc_origin_ip1
+      ip = var.docker_private_ip
       site_locator {
         site {
           tenant    = var.xc_tenant

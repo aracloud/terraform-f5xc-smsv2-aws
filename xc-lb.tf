@@ -17,7 +17,7 @@ resource "volterra_origin_pool" "xc_origin_pool" {
           //kind = "site"
         }
       }
-      outside_network = true
+      inside_network = true
     }
     labels = {}
   }

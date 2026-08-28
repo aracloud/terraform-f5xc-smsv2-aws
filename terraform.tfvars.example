@@ -21,6 +21,7 @@ docker-instance-type = "t3.medium"
 docker-storage-size  = 30
 docker-node-user = "adminuser"
 docker-pub-key = "your-machines-ssh-public-key"
+docker_private_ip = "10.0.102.10"
 
 
 ####################################

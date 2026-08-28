@@ -52,6 +52,13 @@ variable "docker-pub-key" {
   type        = string
 }
 
+variable "docker_private_ip" {
+  type        = string
+  description = "Static IP for the Docker host"
+  #default     = "10.0.2.10" # Muss im CIDR-Block des Subnetzes liegen
+}
+
+
 
 ####################################
 # F5XC CE

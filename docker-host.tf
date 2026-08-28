@@ -43,7 +43,7 @@ resource "aws_instance" "aws_dkr" {
   user_data = file("${path.module}/docker-data.tpl")
 
   tags = {
-    Name   = "${var.prefix}-dkr-node"
+    Name   = "${var.prefix}-dkr-node-${random_id.xc-mcn-random-id.hex}"
     source = var.tag_source_git
     owner  = var.tag_owner
     host   = local.hostname

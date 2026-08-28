@@ -150,13 +150,12 @@ resource "aws_instance" "f5xc_nodes" {
   ]
 }
 
-  ##################################
-  # SLI / inside
-
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_sli.id
-    device_index         = 1
-  }
+# Attach the SLI interface as secondary (inside)
+resource "aws_network_interface_attachment" "f5xc_sli_attach" {
+  instance_id          = aws_instance.f5xc_nodes.id
+  network_interface_id = aws_network_interface.f5xc_sli.id
+  device_index         = 1
+}
 
 
 ####################################

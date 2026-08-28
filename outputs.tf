@@ -24,3 +24,14 @@ output "f5xc_sli_nic" {
     subnet_id  = aws_network_interface.f5xc_sli.subnet_id
   }
 }
+
+output "docker_nic" {
+  description = "Docker Host Network Interface Details"
+  value = {
+    eni_id     = aws_network_interface.aws_nic_dkr.id
+    private_ip = aws_network_interface.aws_nic_dkr.private_ip
+    subnet_id  = aws_network_interface.aws_nic_dkr.subnet_id
+    # Falls eine EIP / Public IP vorhanden ist:
+    public_ip  = try(aws_instance.aws_dkr.public_ip, "None")
+  }
+}

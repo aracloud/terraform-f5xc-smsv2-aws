@@ -137,14 +137,6 @@ resource "aws_instance" "f5xc_nodes" {
     #device_index         = 0
   }
 
-  ##################################
-  # SLI / inside
-
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_sli.id
-    device_index         = 1
-  }
-
   tags = {
     Name   = local.smsv2-site-name
     source = var.tag_source_git
@@ -157,6 +149,14 @@ resource "aws_instance" "f5xc_nodes" {
     volterra_securemesh_site_v2.xc
   ]
 }
+
+  ##################################
+  # SLI / inside
+
+  network_interface {
+    network_interface_id = aws_network_interface.f5xc_sli.id
+    device_index         = 1
+  }
 
 
 ####################################

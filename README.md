@@ -3,7 +3,7 @@
 ## Overview
 This Terraform project deploys following items:
 - Docker host with Demo application (DVWA) in **AWS** 
-- CE **dual**** NIC Host in **AWS** connected to F5 SaaS platform
+- CE **dual** NIC Host in **AWS** connected to F5 SaaS platform
 - Virtual Server in **F5 Saas** including WAF profile
 
 This repository is for demo or PoC show cases only!

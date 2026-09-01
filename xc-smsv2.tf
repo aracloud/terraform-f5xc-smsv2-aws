@@ -69,7 +69,7 @@ data "aws_ami" "f5xc" {
 # F5XC outside / SLO ENI
 
 resource "aws_network_interface" "f5xc_slo" {
-  subnet_id = aws_subnet.slo.id
+  subnet_id         = aws_subnet.slo.id
   source_dest_check = false
 
   security_groups = [
@@ -90,7 +90,7 @@ resource "aws_network_interface" "f5xc_slo" {
 # F5XC inside / SLI ENI
 
 resource "aws_network_interface" "f5xc_sli" {
-  subnet_id = aws_subnet.sli.id
+  subnet_id         = aws_subnet.sli.id
   source_dest_check = false
 
   security_groups = [

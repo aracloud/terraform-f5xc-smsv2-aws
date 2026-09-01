@@ -51,7 +51,7 @@ resource "aws_subnet" "slo" {
 # SLI / Inside subnet
 
 resource "aws_subnet" "sli" {
-  vpc_id            = aws_vpc.vpc.id
+  vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.102.0/24"
   availability_zone = var.aws_az
 

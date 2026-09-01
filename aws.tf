@@ -53,7 +53,7 @@ resource "aws_subnet" "slo" {
 resource "aws_subnet" "sli" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.102.0/24"
-  availability_zone = var.aws_az
+  availability_zone = var.aws_availability_zone
 
   tags = {
     Name   = "${var.prefix}-sli"

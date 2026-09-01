@@ -51,30 +51,12 @@ resource "aws_subnet" "slo" {
 # SLI / Inside subnet
 
 resource "aws_subnet" "sli" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.102.0/24"
-  availability_zone       = var.aws_availability_zone
-  map_public_ip_on_launch = false
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = "10.0.102.0/24"
+  availability_zone = var.aws_az
 
   tags = {
     Name   = "${var.prefix}-sli"
-    source = var.tag_source_git
-    owner  = var.tag_owner
-  }
-}
-
-
-####################################
-# Backend subnet
-
-resource "aws_subnet" "backend" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.103.0/24"
-  availability_zone       = var.aws_availability_zone
-  map_public_ip_on_launch = false
-
-  tags = {
-    Name   = "${var.prefix}-backend"
     source = var.tag_source_git
     owner  = var.tag_owner
   }
@@ -111,17 +93,6 @@ resource "aws_route_table_association" "slo" {
 
 
 ####################################
-# Backend -> public route table
-#
-# Docker needs Internet access for apt/Docker etc.
-
-resource "aws_route_table_association" "backend" {
-  subnet_id      = aws_subnet.backend.id
-  route_table_id = aws_route_table.public.id
-}
-
-
-####################################
 # SLI route table
 #
 # No default Internet route here.
@@ -139,5 +110,5 @@ resource "aws_route_table" "sli" {
 
 resource "aws_route_table_association" "sli" {
   subnet_id      = aws_subnet.sli.id
-  route_table_id = aws_route_table.sli.id
+  route_table_id = aws_route_table.public.id
 }

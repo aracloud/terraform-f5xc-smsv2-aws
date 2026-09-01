@@ -3,12 +3,8 @@
 
 resource "aws_network_interface" "aws_nic_dkr" {
   subnet_id = aws_subnet.sli.id
-
   private_ips = [var.docker_private_ip]
-
-  security_groups = [
-    aws_security_group.docker.id
-  ]
+  security_groups = [ aws_security_group.docker.id ]
 
   tags = {
     Name   = "${var.prefix}-nic-dkr"

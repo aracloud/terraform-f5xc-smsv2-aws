@@ -94,12 +94,17 @@ Here are the main key variables to configure:
 - **Planet wide Variables:**
   ```hcl
   prefix = "your-prefix"
+  tag_owner = "your-email"
   ```
 
 - **AWS wide Variables:**
   ```hcl
-  aws-location = "westus"
-  tag_owner = "your-email"
+  aws_region = "eu-central-1"
+  aws_availability_zone = "eu-central-1a"
+  ```
+
+- **Docker Variables:**
+  ```hcl
   docker-pub-key = "path-to-your-machines-ssh-public-key"
   ```
 

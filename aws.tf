@@ -107,7 +107,6 @@ resource "aws_route_table" "sli" {
   }
 }
 
-
 resource "aws_route_table_association" "sli" {
   subnet_id      = aws_subnet.sli.id
   route_table_id = aws_route_table.public.id

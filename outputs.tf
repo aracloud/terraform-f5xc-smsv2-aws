@@ -8,7 +8,7 @@ output "sitename" {
 
 output "ssh_docker_host" {
   description = "SSH Command fuer den Docker-Host"
-  value       = "ssh -i ~/.ssh/id_rsa admin@${aws_instance.docker_host.public_ip}"
+  value       = "ssh -i ~/.ssh/id_rsa admin@${aws_instance.aws_dkr.public_ip}"
 }
 
 output "docker_nic" {

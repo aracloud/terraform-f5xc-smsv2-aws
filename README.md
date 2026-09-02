@@ -29,7 +29,7 @@ Before using this Terraform project, ensure you have the following:
 - **Terraform CLI** installed on your machine
 - An AWS account
 - API Certificate (P12 file and URL) for **F5 SaaS** access
-- SSH public key for Docker Host VM (adminuser) authentication
+- SSH public key for Docker Host VM (admin) authentication
 - An third-level-domain in F5 SaaS for service deplyoment (DNS Delegation)
   - In this case we use let's encrypt while configuring Autocert for TLS key material
 

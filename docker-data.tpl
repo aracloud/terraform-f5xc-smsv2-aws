@@ -30,7 +30,7 @@ sleep 3
 
 # make system user docker admin
 #sudo /usr/sbin/usermod -aG docker $USER
-sudo /usr/sbin/usermod -aG docker adminuser
+sudo /usr/sbin/usermod -aG docker admin
 
 #sudo docker run -dit -p 8080:80 --name dvwa aracloud/docker-dvwa
 sudo docker run -dit -p 8080:80 --name dvwa ghcr.io/aracloud/dvwa-alpine:latest
@@ -42,7 +42,7 @@ sudo /usr/sbin/locale-gen
 
 # configure ls
 #sed -i s/"#alias l"/"alias l"/g /home/$USER/.bashrc
-sed -i s/"#alias l"/"alias l"/g /home/adminuser/.bashrc
+sed -i s/"#alias l"/"alias l"/g /home/admin/.bashrc
 
 # debug
 #echo $USER >/tmp/user.txt

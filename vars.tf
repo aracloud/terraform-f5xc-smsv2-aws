@@ -42,11 +42,6 @@ variable "docker-storage-size" {
   default     = 30
 }
 
-variable "docker-node-user" {
-  description = "Docker host admin user"
-  type        = string
-}
-
 variable "docker-pub-key" {
   description = "SSH public key"
   type        = string

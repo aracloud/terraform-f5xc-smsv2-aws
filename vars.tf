@@ -94,11 +94,6 @@ variable "xc_namespace" {
   type        = string
 }
 
-variable "xc_origin_ip1" {
-  description = "Backend private IP"
-  type        = string
-}
-
 variable "xc_pub_app_port" {
   description = "Backend application port"
   type        = string

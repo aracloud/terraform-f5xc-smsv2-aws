@@ -1,11 +1,12 @@
+# Project prefix
 prefix = "your-prefix"
 
-aws_region = "us-west-1"
-aws_availability_zone = "us-west-1a"
+# aws_region = "us-west-1"
+# aws_availability_zone = "us-west-1a"
 # aws_region = "us-west-2"
 # aws_availability_zone = "us-west-2a"
-# aws_region = "eu-central-1"
-# aws_availability_zone = "eu-central-1a"
+aws_region = "eu-central-1"
+aws_availability_zone = "eu-central-1a"
 # aws_region = "eu-central-2" # Zurich
 # aws_availability_zone = "eu-central-2a" # Zurich
 
@@ -15,7 +16,6 @@ tag_owner = "your-email"
 
 ####################################
 # Docker host
-
 docker-instance-type = "t3.medium"
 docker-storage-size  = 30
 docker-pub-key = "your-machines-ssh-public-key"
@@ -24,22 +24,18 @@ docker_private_ip = "10.0.102.10"
 
 ####################################
 # F5XC CE
-
 f5xc-sms-instance-type = "m5.2xlarge"
 f5xc-sms-storage-size  = 80
-ce-node-user           = "volterra-admin"
+ce-node-user           = "admin"
 
 
 ####################################
-# AMIs
-
+# AMI
 f5xc_ce_ami_id = "*f5xc-ce-crt-20260201-0178-9.2026.14*"
-
 
 
 ####################################
 # XC
-
 xc_tenant = "your-tenant"
 xc_namespace = "your-namespace"
 xc_origin_ip1 = "10.0.102.10" # equal docker_private_ip

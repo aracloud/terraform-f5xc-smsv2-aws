@@ -80,8 +80,20 @@ export VOLT_API_URL=https://f5-emea-ent.console.ves.volterra.io/api
 export VOLT_API_P12_FILE=/path/to/the/p12/file_api-creds.p12
 ```
 
+### 3. export AWS variables
 
-### 3. Update Variables
+"export" the env variables to authenticate via terraform:
+
+```
+export AWS_DEFAULT_REGION=eu-central-1
+
+export AWS_ACCESS_KEY_ID=""
+export AWS_SECRET_ACCESS_KEY=""
+export AWS_SESSION_TOKEN=""
+```
+
+
+### 4. Update Variables
 
 #### Modify `terraform.tfvars`
 ```bash
@@ -115,7 +127,7 @@ Here are the main key variables to configure:
   xc_app_domain = "your-third-level-domain"
   ```
 
-### 4. Initialize Terraform
+### 5. Initialize Terraform
 
 Run the following command to initialize Terraform and download required providers:
 
@@ -123,7 +135,7 @@ Run the following command to initialize Terraform and download required provider
 terraform init
 ```
 
-### 5. Plan the Deployment
+### 6. Plan the Deployment
 
 Verify the configuration by running:
 
@@ -133,7 +145,7 @@ terraform plan
 
 This command shows the resources Terraform will create.
 
-### 6. Deploy the Resources
+### 7. Deploy the Resources
 
 Apply the configuration to create resources:
 
@@ -145,7 +157,7 @@ Type `yes` to confirm the deployment or add the argument `--auto-approve`.
 
 ---
 
-### 7. Cleanup
+### 8. Cleanup
 
 To destroy all resources created by this project, run:
 

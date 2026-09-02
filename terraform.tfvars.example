@@ -11,7 +11,6 @@ aws_availability_zone = "us-west-1a"
 
 tag_source_git = "terraform-f5xc-smsv2-aws"
 tag_owner = "your-email"
-tag_source_host = "your-host"
 
 
 ####################################
@@ -34,8 +33,7 @@ ce-node-user           = "volterra-admin"
 ####################################
 # AMIs
 
-docker_ami_id  = "AMI-ID-HIER"
-f5xc_ce_ami_id = "AMI-ID-HIER"
+f5xc_ce_ami_id = "*f5xc-ce-crt-20260201-0178-9.2026.14*"
 
 
 
@@ -44,7 +42,7 @@ f5xc_ce_ami_id = "AMI-ID-HIER"
 
 xc_tenant = "your-tenant"
 xc_namespace = "your-namespace"
-xc_origin_ip1 = "10.0.2.5"
+xc_origin_ip1 = "10.0.102.10" # equal docker_private_ip
 xc_pub_app_port = "8080"
 xc_pub_app_no_tls = "true"
 xc_app_domain = "your-app-fqdn"
